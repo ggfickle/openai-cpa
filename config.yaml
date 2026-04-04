@@ -61,6 +61,8 @@ mail_curl:
 luckmail:
   api_key: ""
   preferred_domain: ""
+  email_type: ms_graph
+  variant_mode: ''
 
 # [代理配置]
 # openai注册时代理地址，例子：http://127.0.0.1:7897。如果是国外服务器此项可以不填
@@ -179,6 +181,19 @@ sub2api_mode:
   enable_token_revive: false
   check_interval_minutes: 60
   threads: 10
+
+hero_sms:
+  enabled: false
+  api_key: 
+  base_url: https://hero-sms.com/stubs/handler_api.php
+  country: 50
+  service: dr
+  auto_pick_country: false
+  reuse_phone: true
+  max_price: 0.08
+  min_balance: 1
+  max_tries: 3
+  poll_timeout_sec: 120
 
 # 常规量产模式专属配置
 normal_mode:
