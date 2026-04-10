@@ -203,9 +203,8 @@ createApp({
             this.checkUpdate();
         },
         startStatsPolling() {
-            if(this.statsTimer) clearInterval(this.statsTimer);
+            if(this.statsTimer) clearTimeout(this.statsTimer);
             this.pollStats();
-            this.statsTimer = setInterval(this.pollStats, 1000);
         },
         async pollStats() {
             if(!this.isLoggedIn) return;
@@ -221,7 +220,13 @@ createApp({
                         this.clusterNodes = cData.nodes;
                     }
                 }
-            } catch(e){}
+            } catch(e) {
+
+            } finally {
+                this.statsTimer = setTimeout(() => {
+                    this.pollStats();
+                }, 1000);
+            }
         },
         async fetchConfig() {
             try {

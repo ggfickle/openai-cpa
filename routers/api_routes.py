@@ -584,7 +584,7 @@ def process_cloud_action(req: CloudActionReq, token: str = Depends(verify_token)
 
 @router.get('/api/sms/balance')
 def api_get_sms_balance(token: str = Depends(verify_token)):
-    from utils.hero_sms import hero_sms_get_balance
+    from utils.integrations.hero_sms import hero_sms_get_balance
     proxy_url = core_engine.cfg.DEFAULT_PROXY
     balance, err = hero_sms_get_balance(proxies={"http": proxy_url, "https": proxy_url} if proxy_url else None)
     return {"status": "success", "balance": f"{balance:.2f}"} if balance >= 0 else {"status": "error", "message": err}
@@ -592,7 +592,7 @@ def api_get_sms_balance(token: str = Depends(verify_token)):
 
 @router.post('/api/sms/prices')
 def api_get_sms_prices(req: SMSPriceReq, token: str = Depends(verify_token)):
-    from utils.hero_sms import _hero_sms_prices_by_service
+    from utils.integrations.hero_sms import _hero_sms_prices_by_service
     proxy_url = core_engine.cfg.DEFAULT_PROXY
     rows = _hero_sms_prices_by_service(req.service,
                                        proxies={"http": proxy_url, "https": proxy_url} if proxy_url else None)
@@ -602,7 +602,7 @@ def api_get_sms_prices(req: SMSPriceReq, token: str = Depends(verify_token)):
 @router.post("/api/luckmail/bulk_buy")
 def api_luckmail_bulk_buy(req: LuckMailBulkBuyReq, token: str = Depends(verify_token)):
     try:
-        from utils.luckmail_service import LuckMailService
+        from utils.email_providers.luckmail_service import LuckMailService
         lm_service = LuckMailService(api_key=req.config.get("api_key"),
                                      preferred_domain=req.config.get("preferred_domain", ""),
                                      email_type=req.config.get("email_type", "ms_graph"),
@@ -646,7 +646,7 @@ async def exchange_gmail_code(req: GmailExchangeReq, token: str = Depends(verify
 
 
 @router.get("/api/sub2api/groups")
-async def get_sub2api_groups(token: str = Depends(verify_token)):
+def get_sub2api_groups(token: str = Depends(verify_token)):
     from curl_cffi import requests as cffi_requests
     sub2api_url = getattr(core_engine.cfg, "SUB2API_URL", "").strip()
     sub2api_key = getattr(core_engine.cfg, "SUB2API_KEY", "").strip()
@@ -796,7 +796,7 @@ async def cluster_view_ws(websocket: WebSocket, token: str = Query(None)):
 
 
 @router.post("/api/cluster/upload_accounts")
-async def cluster_upload_accounts(req: ClusterUploadAccountsReq):
+def cluster_upload_accounts(req: ClusterUploadAccountsReq):
     if req.secret != str(getattr(core_engine.cfg, '_c', {}).get("cluster_secret", "wenfxl666")).strip(): return {
         "status": "error", "message": "密钥错误"}
     success_count = 0
